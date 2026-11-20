@@ -1,0 +1,9 @@
+{
+  "created_utc": "2026-11-20T08:26:41+00:00",
+  "champion": "glm",
+  "challenger": "gbm",
+  "recommendation": "promote challenger",
+  "status": "awaiting_approval",
+  "approved_by": null,
+  "note": "Automated checks passed. A named reviewer must approve before any model is promoted."
+}

@@ -1,0 +1,47 @@
+# motor-frequency-toolkit configuration
+# All settings live here so experiments are reproducible and reviewable.
+
+data:
+  local_path: null          # optional path to freMTPL2freq .rda or .csv; null = download
+  max_claims: 4             # cap rare extreme claim counts
+  max_exposure: 1.0         # exposure is insured time within one year
+
+# The public dataset has no dates. Periods are SIMULATED (illustrative only)
+# so that time-based validation and drift monitoring can be demonstrated.
+simulation:
+  seed: 42
+  n_periods: 4
+  test_period: 4
+  drift:
+    enabled: true
+    feature: VehBrand
+    level: B12
+    period: 4
+    uplift: 0.6             # +60% claim frequency in this segment in the test period
+
+features:
+  categorical: [VehBrand, VehGas, Area]
+  binned: [VehAge, DrivAge, VehPower]
+  log: [Density]
+  passthrough: [BonusMalus]
+  n_bins: 10
+  area_grouping:
+    column: Region
+    n_groups: 5
+    credibility_k: 2000     # exposure needed for a region to be trusted fully
+
+models:
+  glm:
+    alpha: 0.0001
+    max_iter: 300
+  gbm:
+    learning_rate: 0.1
+    max_iter: 200
+    max_leaf_nodes: 64
+
+monitoring:
+  segment: VehBrand
+  oe_threshold: 1.2         # flag segments with O/E above this
+  min_exposure: 1000        # ignore tiny segments
+
+output_dir: reports

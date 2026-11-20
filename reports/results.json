@@ -1,0 +1,50 @@
+{
+  "rows": 677991,
+  "overall_frequency": 0.0753773972235815,
+  "out_of_time": {
+    "glm": {
+      "poisson_deviance": 0.49308051964564276,
+      "oe": 1.086042922787948,
+      "lift_top_bottom_decile": 4.4665434402593736
+    },
+    "gbm": {
+      "poisson_deviance": 0.4825375910546079,
+      "oe": 1.0799798054400886,
+      "lift_top_bottom_decile": 7.340364066861471
+    }
+  },
+  "validation_comparison": {
+    "segment": "VehBrand=B12",
+    "time_split_segment_oe": 1.540311065478567,
+    "random_split_segment_oe": 0.9494885995057367
+  },
+  "area_grouping": {
+    "grouped regions (5 bands)": {
+      "poisson_deviance": 0.49308051964564276,
+      "oe": 1.086042922787948,
+      "lift_top_bottom_decile": 4.4665434402593736
+    },
+    "raw Region (22 levels)": {
+      "poisson_deviance": 0.4928730063763461,
+      "oe": 1.085988697877086,
+      "lift_top_bottom_decile": 4.232914617897039
+    },
+    "without region (Area and Density only)": {
+      "poisson_deviance": 0.49313421466242563,
+      "oe": 1.0875078228433157,
+      "lift_top_bottom_decile": 4.469448157955295
+    }
+  },
+  "alerts": [
+    "B12"
+  ],
+  "decision": {
+    "created_utc": "2026-11-20T08:26:41+00:00",
+    "champion": "glm",
+    "challenger": "gbm",
+    "recommendation": "promote challenger",
+    "status": "awaiting_approval",
+    "approved_by": null,
+    "note": "Automated checks passed. A named reviewer must approve before any model is promoted."
+  }
+}
