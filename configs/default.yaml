@@ -2,7 +2,8 @@
 # All settings live here so experiments are reproducible and reviewable.
 
 data:
-  local_path: null          # optional path to freMTPL2freq .rda or .csv; null = download
+  source: openml            # openml (as in the scikit-learn tutorial) or casdatasets (another release with different claim counts)
+  local_path: null          # optional path to freMTPL2freq .rda or .csv; overrides source
   max_claims: 4             # cap rare extreme claim counts
   max_exposure: 1.0         # exposure is insured time within one year
 

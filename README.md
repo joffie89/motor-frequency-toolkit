@@ -1,4 +1,4 @@
-![tests](https://github.com/<your-username>/motor-frequency-toolkit/actions/workflows/ci.yml/badge.svg)
+![tests](https://github.com/joffie89/motor-frequency-toolkit/actions/workflows/ci.yml/badge.svg)
 
 # motor-frequency-toolkit
 
@@ -6,7 +6,7 @@ A reusable Python toolkit for **motor claim-frequency modelling**: from raw poli
 model comparison, a feature-selection report and segment-level monitoring, with a human
 approval gate before any model is promoted.
 
-> **Data and scope.** Uses the public French motor dataset *freMTPL2freq* (677,991 policies).
+> **Data and scope.** Uses the public French motor dataset *freMTPL2freq* from OpenML (678,013 policies).
 > It covers all claim types and has no dates, so **time periods and the emerging-risk shift are
 > simulated and illustrative**. The aim is to show the approach and the engineering, not real results.
 
@@ -44,15 +44,17 @@ All settings are in `configs/default.yaml`.
 
 ## Results (illustrative)
 
+From `python -m motorfreq run` with the default config (OpenML data; overall frequency 0.104 claims per vehicle-year).
+
 **Champion vs challenger**, trained on periods 1–3, tested on period 4:
 
 | Model | Poisson deviance | O/E | Lift (top ÷ bottom decile) |
 | --- | --- | --- | --- |
-| Poisson GLM | 0.4931 | 1.086 | 4.47× |
-| Poisson GBM | 0.4825 | 1.080 | 7.34× |
+| Poisson GLM | 0.6424 | 1.133 | 7.96× |
+| Poisson GBM | 0.6281 | 1.122 | 9.55× |
 
-The GBM separates risk much more sharply. O/E is above 1 for both because the test period contains
-the simulated risk increase, which no model trained on earlier data can know about.
+The GBM fits better and separates risk more sharply. O/E is above 1 for both because the test period
+contains the simulated risk increase, which no model trained on earlier data can know about.
 
 ![Lift chart](reports/lift_chart.png)
 
@@ -61,20 +63,22 @@ frequency rise in the latest period, standing in for something like a new theft 
 
 | Validation | Segment O/E |
 | --- | --- |
-| Train on earlier periods, test on the latest | **1.54**: the shift is visible |
-| Random 75/25 split | **0.95**: the shift is hidden |
+| Train on earlier periods, test on the latest | **1.56**: the shift is visible |
+| Random 75/25 split | **1.05**: the shift is hidden |
 
 A random split mixes old and new data, so it can make a stale model look fine.
 
 **Location grouping.** Credibility-weighted grouping of 22 regions into 5 bands matches the fit of the
-raw regions (deviance 0.4931 vs 0.4929) with far fewer parameters, and gives better lift (4.47× vs 4.23×).
+raw regions (deviance 0.6424 vs 0.6421) with slightly better lift (7.96× vs 7.91×), and improves lift
+over leaving region out (7.79×).
 
 **Feature selection** (`reports/feature_selection.csv`) combines three views per feature:
 how much validation deviance worsens without it, how strongly frequency varies across its values,
-and how stable its effect is over time. It correctly flags **VehBrand as unstable**, which is the
-feature affected by the simulated shift, and **Density** as adding little once Area and the region groups are in the model (a candidate to drop or merge).
+and how stable its effect is over time. It flags **VehBrand as unstable** (the feature affected by the
+simulated shift) even though it still helps the model, and shows that **Area, Density and the region
+groups** each add little on their own because they carry overlapping location information.
 
-**Monitoring** (`reports/monitoring.csv`) raises an alert for B12 (O/E 1.54 against a 1.2 threshold).
+**Monitoring** (`reports/monitoring.csv`) raises an alert for B12 (O/E 1.56 against a 1.2 threshold).
 
 ## Approval gate
 

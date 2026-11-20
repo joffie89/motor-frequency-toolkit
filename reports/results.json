@@ -1,45 +1,45 @@
 {
-  "rows": 677991,
-  "overall_frequency": 0.0753773972235815,
+  "rows": 678013,
+  "overall_frequency": 0.10416338044039263,
   "out_of_time": {
     "glm": {
-      "poisson_deviance": 0.49308051964564276,
-      "oe": 1.086042922787948,
-      "lift_top_bottom_decile": 4.4665434402593736
+      "poisson_deviance": 0.642366661990464,
+      "oe": 1.1329548533163343,
+      "lift_top_bottom_decile": 7.957425585109406
     },
     "gbm": {
-      "poisson_deviance": 0.4825375910546079,
-      "oe": 1.0799798054400886,
-      "lift_top_bottom_decile": 7.340364066861471
+      "poisson_deviance": 0.6281158134074472,
+      "oe": 1.1218264350293725,
+      "lift_top_bottom_decile": 9.54566524543198
     }
   },
   "validation_comparison": {
     "segment": "VehBrand=B12",
-    "time_split_segment_oe": 1.540311065478567,
-    "random_split_segment_oe": 0.9494885995057367
+    "time_split_segment_oe": 1.5649566278790312,
+    "random_split_segment_oe": 1.050637810349305
   },
   "area_grouping": {
     "grouped regions (5 bands)": {
-      "poisson_deviance": 0.49308051964564276,
-      "oe": 1.086042922787948,
-      "lift_top_bottom_decile": 4.4665434402593736
+      "poisson_deviance": 0.642366661990464,
+      "oe": 1.1329548533163343,
+      "lift_top_bottom_decile": 7.957425585109406
     },
     "raw Region (22 levels)": {
-      "poisson_deviance": 0.4928730063763461,
-      "oe": 1.085988697877086,
-      "lift_top_bottom_decile": 4.232914617897039
+      "poisson_deviance": 0.6420500503293806,
+      "oe": 1.1323292765282,
+      "lift_top_bottom_decile": 7.908766507875588
     },
     "without region (Area and Density only)": {
-      "poisson_deviance": 0.49313421466242563,
-      "oe": 1.0875078228433157,
-      "lift_top_bottom_decile": 4.469448157955295
+      "poisson_deviance": 0.6423393819101024,
+      "oe": 1.133301022187654,
+      "lift_top_bottom_decile": 7.7922090292205
     }
   },
   "alerts": [
     "B12"
   ],
   "decision": {
-    "created_utc": "2026-11-20T08:26:41+00:00",
+    "created_utc": "2026-11-20T08:56:47+00:00",
     "champion": "glm",
     "challenger": "gbm",
     "recommendation": "promote challenger",

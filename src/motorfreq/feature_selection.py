@@ -41,7 +41,7 @@ def stability(df: pd.DataFrame, feature: str, min_exposure: float = 1000) -> flo
     """Largest change in a value's relativity between the first and last period (as a ratio, >= 1)."""
     periods = sorted(df["Period"].unique())
     first, last = (one_way(df[df["Period"] == p], feature) for p in (periods[0], periods[-1]))
-    joined = first.join(last, lsuffix="_first", rsuffix="_last")
+    joined = first.merge(last, left_index=True, right_index=True, suffixes=("_first", "_last"))
     joined = joined[(joined["exposure_first"] >= min_exposure) & (joined["exposure_last"] >= min_exposure)]
     ratio = joined["relativity_last"] / joined["relativity_first"]
     return float(np.exp(np.abs(np.log(ratio)).max()))

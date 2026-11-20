@@ -18,24 +18,26 @@ def _read_file(path: Path) -> pd.DataFrame:
     return list(pyreadr.read_r(str(path)).values())[0]
 
 
-def load_raw(local_path: str | None = None) -> pd.DataFrame:
-    """Load freMTPL2freq.
+def load_raw(local_path: str | None = None, source: str = "openml") -> pd.DataFrame:
+    """Load freMTPL2freq from one explicit source, so every run uses the same data.
 
-    Order: a local file if given; otherwise OpenML; otherwise the CASdatasets copy on GitHub.
+    - "openml": the version used in the scikit-learn tutorial (678,013 policies).
+    - "casdatasets": the CASdatasets R package release (677,991 policies, different claim counts).
+    The two give different frequencies, so the source is fixed in the config, never mixed.
     """
     if local_path:
         return _read_file(Path(local_path)).reset_index(drop=True)
-    try:
+    if source == "openml":
         from sklearn.datasets import fetch_openml
 
-        df = fetch_openml(data_id=41214, as_frame=True, n_retries=1).frame
-    except Exception:
+        return fetch_openml(data_id=41214, as_frame=True).frame.reset_index(drop=True)
+    if source == "casdatasets":
         CACHE_DIR.mkdir(exist_ok=True)
         path = CACHE_DIR / "freMTPL2freq.rda"
         if not path.exists():
             urllib.request.urlretrieve(RDA_URL, path)
-        df = _read_file(path)
-    return df.reset_index(drop=True)
+        return _read_file(path).reset_index(drop=True)
+    raise ValueError(f"unknown data source: {source!r} (use 'openml' or 'casdatasets')")
 
 
 def prepare(df: pd.DataFrame, max_claims: int = 4, max_exposure: float = 1.0) -> pd.DataFrame:

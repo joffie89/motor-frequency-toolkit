@@ -29,7 +29,7 @@ def _spec(cfg: dict, extra_categorical: list[str] | None = None) -> models.Featu
 
 def build_dataset(cfg: dict, raw: pd.DataFrame | None = None) -> pd.DataFrame:
     d, s = cfg["data"], cfg["simulation"]
-    df = data.prepare(raw if raw is not None else data.load_raw(d.get("local_path")),
+    df = data.prepare(raw if raw is not None else data.load_raw(d.get("local_path"), d.get("source", "openml")),
                       d["max_claims"], d["max_exposure"])
     validate.validate(df, _spec(cfg).columns + [cfg["features"]["area_grouping"]["column"]])
     df = features.add_periods(df, s["n_periods"], s["seed"])
