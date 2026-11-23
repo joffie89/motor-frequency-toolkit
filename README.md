@@ -10,12 +10,11 @@ approval gate before any model is promoted.
 > It covers all claim types and has no dates, so **time periods and the emerging-risk shift are
 > simulated and illustrative**. The aim is to show the approach and the engineering, not real results.
 
-## Why this exists
+## Why I built this
 
-When a pricing team builds or rebuilds a frequency model, the same steps are often redone by hand
-in notebooks: preparing data, checking rating factors, comparing models and checking performance
-over time. This toolkit packages those steps so they are **consistent, configurable, tested and
-reviewable**.
+I wanted to work through a few questions that come up whenever a pricing team builds or rebuilds a frequency model: how to choose rating factors with evidence, how to know a model will still hold up on future data, and how to turn the repeated notebook steps into a tool the whole team can reuse.
+
+This toolkit takes motor policy data, checks it, compares a GLM with a gradient-boosted model, reports which features actually help, and flags when a segment starts drifting. The part I care most about is that it's reusable and tested, and that it stops before promoting a new model until a person signs off.
 
 ## Quick start
 
@@ -24,7 +23,8 @@ python -m venv .venv
 .venv\Scripts\activate          # Windows  (Mac/Linux: source .venv/bin/activate)
 pip install -e ".[dev]"
 python -m motorfreq run         # downloads data, runs everything, writes reports/
-pytest -q                       # 10 tests
+python -m motorfreq benchmark   # loop vs vectorised pandas, string vs categorical memory
+pytest -q                       # 12 tests
 ```
 
 All settings are in `configs/default.yaml`.
@@ -41,6 +41,7 @@ All settings are in `configs/default.yaml`.
 | Feature selection | `feature_selection.py` | Which rating factors help, which overlap, which are unstable? |
 | Monitoring | `monitor.py` | Which segments are drifting away from predictions? |
 | Pipeline | `pipeline.py` | Runs it all; **recommends** a model but waits for a named approval |
+| Benchmark | `benchmark.py` | How much do vectorised pandas and categorical dtypes save at portfolio scale? |
 
 ## Results (illustrative)
 
@@ -80,6 +81,23 @@ groups** each add little on their own because they carry overlapping location in
 
 **Monitoring** (`reports/monitoring.csv`) raises an alert for B12 (O/E 1.56 against a 1.2 threshold).
 
+**Efficiency** (`python -m motorfreq benchmark`, 678,013 policies). Computing exposure-weighted
+one-way frequency tables for four rating factors:
+
+| Method | Time |
+| --- | --- |
+| Row-by-row Python loop | 0.442 s |
+| Vectorised pandas groupby | 0.149 s |
+| Vectorised groupby on categorical columns | **0.041 s (11× faster)** |
+
+All three give identical results. Storing the text columns as categoricals cuts their memory from
+142.9 MB to 2.7 MB (53× smaller). Small per table, but these steps run many times across features,
+segments and model iterations.
+
+## What I learned
+
+The result that surprised me most was the validation one. When I added a shift to one vehicle segment, a random train/test split almost completely hid it (O/E 1.05), while testing on a later period caught it straight away (1.56). I'd always known time-based splits were "better", but seeing a random split make a stale model look fine made it click. The other surprise was how much plain pandas choices matter at this scale: switching text columns to categoricals made the same calculation 11× faster and used 53× less memory.
+
 ## Approval gate
 
 The pipeline writes `reports/decision.json` with `"status": "awaiting_approval"`. Nothing is promoted
@@ -92,7 +110,7 @@ python -m motorfreq approve --by "Reviewer Name"
 ## Engineering
 
 - Installable package (`pyproject.toml`), configuration in YAML, no hard-coded settings
-- 10 `pytest` tests on synthetic data (fast, no download), run on every push by GitHub Actions
+- 12 `pytest` tests on synthetic data (fast, no download), run on every push by GitHub Actions
 - Training-only fitting of groupings to avoid leakage into the test period
 
 ## Next steps
